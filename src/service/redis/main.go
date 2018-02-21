@@ -81,6 +81,25 @@ func (t *Redis) Get(args *GetArgs, reply *interface{}) error {
 	return nil
 }
 
+func (t *Redis) Delete(args *GetArgs, reply *interface{}) error {
+	conn, err := getconn()
+	if err != nil {
+		*reply = ResultError{Error: err.Error()}
+		return nil
+	}
+	defer MyRedisPool.Put(conn)
+	client := conn.Client.(ResourceConn)
+	
+	_, err = client.Do("Del", args.Key)
+	if err != nil {
+		*reply = ResultError{Error: err.Error()}
+		return nil
+	}
+	*reply = ResultWrite{Success: true}
+	return nil
+}
+
+
 var MyRedisPool *pool.Pool
 
 func init() {
