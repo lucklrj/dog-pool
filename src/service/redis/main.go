@@ -116,7 +116,7 @@ func init() {
 		return ResourceConn{client}
 	}
 	MyRedisPool.DestroyClient = func(c interface{}) {
-		c.(*pool.Coon).Client.(ResourceConn).Close()
+		c.(ResourceConn).Close()
 	}
 
 	err := MyRedisPool.Init()

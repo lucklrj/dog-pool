@@ -11,3 +11,7 @@ func Exit(err error) {
 		os.Exit(0)
 	}
 }
+
+func Horizontaline(){
+	color.Green("--------------------")
+}
