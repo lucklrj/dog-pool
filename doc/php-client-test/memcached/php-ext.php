@@ -6,8 +6,11 @@ $m->set("lrj",date("Y-m-d H:i:s"),10000);
 $max=1;
 $i=0;
 while($i<$max){
-	echo $m->get("lrj");
-	$i++;
+	$m->set("lrj",date("Y-m-d H:i:s"),3600);
+	$m->set("lrj2","你好，刘仁俊",3600);
+	$m->getMulti(["lrj","lrj2"]); 
+	$m->flush(); 
+	$m->getMulti(["lrj","lrj2"]); 
 }
 
 

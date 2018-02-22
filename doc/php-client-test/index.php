@@ -1,8 +1,8 @@
 <?php
 $time_start = microtime_float();
 
-$type="memcache";
-$max=1;
+$type="mysql";
+$max=100;
 
 for($i=0;$i<=$max;$i++){
 	exec("php -f ./".$type."/php-ext.php");

@@ -28,7 +28,7 @@ type ResultError struct {
 	Error string
 }
 
-type SingleLineData map[string]string
+type SingleLineData map[string]interface{}
 type AllLineData []SingleLineData
 
 var CoonPool = make(map[string]*sql.DB)
@@ -109,7 +109,7 @@ func (t *Mysql) Query(args *Args, reply *interface{}) error {
 			err = rows.Scan(scanArgs...)
 			for i, col := range values {
 				if col != nil {
-					singleLineData[columns[i]] = string(col.([]byte))
+					singleLineData[columns[i]] = col
 				}
 			}
 			allLineData = append(allLineData, singleLineData)
