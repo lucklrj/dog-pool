@@ -1,12 +1,11 @@
 package memcache
 
 import (
-	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/kklis/gomemcache"
 	"github.com/fatih/color"
 	"github.com/lucklrj/pool"
 	"lib/config"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -15,7 +14,7 @@ type Memcache string
 type SetArgs struct {
 	Key      string
 	Value    string
-	LeftTime int32
+	LeftTime int64
 }
 type GetArgs struct {
 	Key string
@@ -39,14 +38,9 @@ func (t *Memcache) Set(args *SetArgs, reply *interface{}) error {
 		return nil
 	}
 	defer MyMemcachePool.Put(conn)
-	mc := conn.Client.(*memcache.Client)
-
-	err = mc.Set(&memcache.Item{Key: args.Key, Value: []byte(args.Value)})
-	if err != nil {
-		*reply = ResultError{Error: err.Error()}
-		return nil
-	}
-	err = mc.Touch(args.Key, args.LeftTime)
+	mc := conn.Client.(*gomemcache.Memcache)
+	
+	err = mc.Set(args.Key, []uint8(args.Value), 0, args.LeftTime)
 	if err != nil {
 		*reply = ResultError{Error: err.Error()}
 		return nil
@@ -62,14 +56,15 @@ func (t *Memcache) Get(args *GetArgs, reply *interface{}) error {
 		return nil
 	}
 	defer MyMemcachePool.Put(conn)
-	mc := conn.Client.(*memcache.Client)
+	mc := conn.Client.(*gomemcache.Memcache)
 
-	returnValue, err := mc.Get(args.Key)
+	returnValue, _, err := mc.Get(args.Key)
+	
 	if err != nil {
 		*reply = ResultError{Error: err.Error()}
 		return nil
 	}
-	*reply = ResultRead{Data: string(returnValue.Value)}
+	*reply = ResultRead{Data: string(returnValue)}
 	return nil
 }
 func (t *Memcache) GetMulti(args *GetArgs, reply *interface{}) error {
@@ -79,10 +74,10 @@ func (t *Memcache) GetMulti(args *GetArgs, reply *interface{}) error {
 		return nil
 	}
 	defer MyMemcachePool.Put(conn)
-	mc := conn.Client.(*memcache.Client)
+	mc := conn.Client.(*gomemcache.Memcache)
 
 	KeyList := strings.Split(args.Key, ",")
-	returnValue, err := mc.GetMulti(KeyList)
+	returnValue, err := mc.GetMulti(KeyList...)
 
 	if err != nil {
 		*reply = ResultError{Error: err.Error()}
@@ -103,7 +98,7 @@ func (t Memcache) Delete(args *GetArgs, reply *interface{}) error {
 		return nil
 	}
 	defer MyMemcachePool.Put(conn)
-	mc := conn.Client.(*memcache.Client)
+	mc := conn.Client.(*gomemcache.Memcache)
 	err = mc.Delete(args.Key)
 	if err != nil {
 		*reply = ResultError{Error: err.Error()}
@@ -120,7 +115,7 @@ func (t Memcache) FlushAll(args *EmptyArgs, reply *interface{}) error {
 		return nil
 	}
 	defer MyMemcachePool.Put(conn)
-	mc := conn.Client.(*memcache.Client)
+	mc := conn.Client.(*gomemcache.Memcache)
 	err = mc.FlushAll()
 	if err != nil {
 		*reply = ResultError{Error: err.Error()}
@@ -139,10 +134,11 @@ func init() {
 	MyMemcachePool.ConnTimeOut = config.MemcachedConfig.ConnTimeOut
 
 	MyMemcachePool.CreateClient = func() interface{} {
-		return memcache.New(config.MemcachedConfig.Host + ":" + strconv.Itoa(config.MemcachedConfig.Port))
+		memc, _ := gomemcache.Connect(config.MemcachedConfig.Host, config.MemcachedConfig.Port)
+		return memc
 	}
 	MyMemcachePool.DestroyClient = func(c interface{}) {
-
+		c.(*gomemcache.Memcache).Close()
 	}
 
 	err := MyMemcachePool.Init()

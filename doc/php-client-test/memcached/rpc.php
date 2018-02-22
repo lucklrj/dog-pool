@@ -38,7 +38,12 @@ for($i=0;$i<$run_num;$i++){
     print_r($r);
     $r = $client->Call("Memcache.Set",array("Key"=>"lrj2",'Value'=>"你好，刘仁俊","LeftTime"=>3600),$i);
     print_r($r);
-        $r = $client->Call("Memcache.GetMulti",array("Key"=>"lrj,lrj2",'Value'=>"你好，刘仁俊","LeftTime"=>3600),$i);
+    $r = $client->Call("Memcache.GetMulti",array("Key"=>"lrj,lrj2",'Value'=>"你好，刘仁俊","LeftTime"=>3600),$i);
+    print_r($r);
+    
+    $r = $client->Call("Memcache.FlushAll","",$i);
+    print_r($r);    
+    $r = $client->Call("Memcache.GetMulti",array("Key"=>"lrj,lrj2",'Value'=>"你好，刘仁俊","LeftTime"=>3600),$i);
     print_r($r);
     
     /*
@@ -46,8 +51,7 @@ for($i=0;$i<$run_num;$i++){
     print_r($r);
     $r = $client->Call("Memcache.Delete",array("Key"=>"lrj"),$i);
     print_r($r);
-    $r = $client->Call("Memcache.FlushAll","",$i);
-    print_r($r);
+
     */
 
     
