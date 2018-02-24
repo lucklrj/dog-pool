@@ -1,6 +1,6 @@
 <?php
 require(realpath(__dir__)."/../lib.php");
-$run_num = 1;
+$run_num = 100;
 $client = new JsonRPC("127.0.0.1", 5555);
     
 for($i=0;$i<$run_num;$i++){

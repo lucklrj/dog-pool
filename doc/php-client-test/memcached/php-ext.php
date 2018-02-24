@@ -11,6 +11,7 @@ while($i<$max){
 	$m->getMulti(["lrj","lrj2"]); 
 	$m->flush(); 
 	$m->getMulti(["lrj","lrj2"]); 
+	$i++;
 }
 
 

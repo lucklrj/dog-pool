@@ -1,5 +1,5 @@
 <?php
-$run_num=1;
+$run_num=100;
 $r = new Redis();
 //连接
 $r->connect('127.0.0.1', 6379);

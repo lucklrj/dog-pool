@@ -2,9 +2,9 @@
 $time_start = microtime_float();
 
 $type="mysql";
-$max=100;
+$max=10;
 
-for($i=0;$i<=$max;$i++){
+for($r=0;$r<=$max;$r++){
 	exec("php -f ./".$type."/php-ext.php");
 }
 
